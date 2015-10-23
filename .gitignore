@@ -33,6 +33,7 @@
 
 # Latex
 *.log
+*.aux
 
 # Extras
 *~
