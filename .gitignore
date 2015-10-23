@@ -36,4 +36,4 @@
 *.aux
 
 # Extras
-*~
+relatorio/*~
