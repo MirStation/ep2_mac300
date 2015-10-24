@@ -2,6 +2,7 @@
 \usepackage{times}
 \usepackage{listings}
 \usepackage{amsmath}
+\usepackage{amssymb}
 \usepackage[top=10mm, bottom=15mm, left=20mm, right=20mm]{geometry}
 \usepackage{multirow}
 \usepackage{hhline}
@@ -39,7 +40,62 @@
 
 \section{Método de Gradientes Conjugados}
 \subsection{Descrição}
-...
+\ \\
+O método dos gradientes conjugados consiste em um algoritmo para solução
+de sistemas lineares cujas matrizes são simétricas positivas definidas.
+
+Quando A é simétrica positiva definida podemos definir um novo produto interno
+induzido pela matriz $A: \langle x,y \rangle_{A} = \langle Ax, y \rangle$, onde
+$\langle Ax, y \rangle$ denota o produto escalar usual entre os vetores $Ax$ e $y$.
+A comutatividade do produto interno induzido por $A$ decorre da simetria da matriz,
+enquanto que o fato da matriz ser positiva definida garante que $\langle x, x
+\rangle_{A} > 0$, se $x\neq0$.
+
+O método para a solução de uma equação $Ax=b$ parte de uma aproximação inicial qualquer
+$x_{0}$, a partir da qual define-se uma direção inicial:
+\\~\\
+$d_{0}=r_{0}=b-Ax_{0}$
+\\~\\
+Se denotarmos a solução exata do sistema linear por $\bar x$, obtemos a seguinte relação entre o resíduo $r_{0}$ e o erro $e_{0} = \bar x - x_{0}$:
+\\~\\
+$r_{0} = Ae_{0}$
+\\~\\
+Vamos procurar eliminar do erro qualquer componente da direção inicial $d_{0}$.
+Para isso poderíamos em princípio subtrair do erro sua projeção ortogonal na direção $d_{0}$ (para o que teríamos que avaliar $\langle e_{0} , d_{0} \rangle$). Isto não é viável uma vez que não conhecemos $e_{0}$. O problema é no entanto contornável em vez de usarmos o produto interno usual do $R^{n}$, optarmos por usar o produto interno induzido pela matriz A, uma vez que $\langle e_{0} , d_{0} \rangle_{A} = \langle Ae_{0} , d_{0} \rangle = \langle r_{0} , d_{0} \rangle$, que podemos calcular mesmo desconhecendo $e_{0}$. Assim obtemos um novo erro $e_{1}$, que será ortogonal à direção inicial $d_{0}$, dado por
+\\~\\
+$e_{1} = e_{0} - \frac{\langle r_{0} , d_{0} \rangle}{\langle d_{0} , d_{0} \rangle_{A}} d_{0}$
+\\~\\
+Note que a equação anterior equivale a definirmos uma nova aproximação
+\\~\\
+$x_{1} = x_{0} + \frac{\langle r_{0} , d_{0} \rangle}{\langle d_{0} , d_{0} \rangle_{A}} d_{0}$
+\\~\\
+que podemos calcular apenas através da matriz $A$ e da aproximação inicial. A nova aproximação $x_{1}$ define um novo resíduo $r_{1} = b - Ax_{1}$, valendo também que $r_{1} = Ae_{1}$. Este novo resíduo forma com a direção inicial $d_{0}$ uma base de um plano (espeço de dimensão 2). Vamos agora querer tornar o novo erro $e_{1}$ ortogonal a este plano. Para tal vamos primeiramente tornar a base do plano ortogonal (em relação ao produto interno induzido pela matriz A), definindo a direção $d_{1}$ ortogonal a $d_{0}$, como:
+\\~\\
+$d_{1} = r_{1} - \frac{\langle r_{1} , d_{0} \rangle_{A}}{\langle d_{0} , d_{0} \rangle_{A}} d_{0}$
+\\~\\
+Para tornarmos o erro $e_{1}$ ortogonal ao plano temos apenas que retirar sua projeção ortogonal na direção $d_{1}$ (uma vez que ele já é ortogonal a $d_{0}$). Assim obteremos:
+\\~\\
+$e_{2} = e_{1} - \frac{\langle r_{1} , d_{1} \rangle}{\langle d_{1} , d_{1} \rangle_{A}} d_{1}$
+\\~\\
+o que equivale a definirmos a nova aproximação
+\\~\\
+$x_{2} = x_{1} + \frac{\langle r_{1} , d_{1} \rangle}{\langle d_{1} , d_{1} \rangle_{A}} d_{1}$
+\\~\\
+Esta nova aproximação definirá um novo resíduo que formará junto com as direções anteriores um espaço de dimesão 3. Vamos tornar a base deste espaço ortogonal, retirando do novo resíduo sua projeção ortogonal nas direções anteriores. Aí só teremos que projetar o erro nesta nova direção, somando o resultado à aproximação anterior, obtendo assim um erro ortogonal a este espaço de dimensão 3. O processo continua com a adição de novas direções definidas através dos resíduos(ortogonalizados em relação às direções anteriores), sempre tornando o erro ortogonal a esses espaços de dimensão crescente. O processo terminará no máximo após $n$ etapas, quando teremos o erro ortogonal a um sub-espaço de dimensão $n$ do próprio $R^{n}$ (ou seja, o sub-espaço será o próprio $R^{n}$). Isto só é possível com erro igual a zero, ouseja, se chegarmos à solução exata da equação. Note que todo o processo só se torna possível ao utilizarmos o produto interno induzido pela matriz A, que nos permite calcular a projeção do erro em diversas direções, mesmo sem conhecer este erro. \\~\\O algoritmo completo fica então definido como:
+\begin{itemize}
+\item Escolha $x_{0}$ e calcule $d_{0}=r_{0}=b-Ax_{0}$. Defina $k=0$.
+\item Enquanto $k < n$ e $r_{k} \neq 0$ faça
+  \begin{itemize}
+  \item Defina $\alpha_{k} = \langle r_{k} , d_{k} \rangle / \langle d_{k} , d_{k} \rangle_{A}$ ($\langle e_{k} , d_{k} \rangle_{A} / \langle d_{k} , d_{k} \rangle_{A}$)
+  \item Calcule $x_{k+1} = x_{k} + \alpha_{k}d_{k}$
+  \item Calcule $r_{k+1} = b - Ax_{k+1} = r_{k} - \alpha_{k}Ad_{k}$ ($Ad_{k}$ já foi calculado)
+  \item Defina $\beta_{k} = \langle r_{k+1} , d_{k} \rangle_{A} / \langle d_{k} , d_{k} \rangle_{A}$
+  \item Defina $d_{k+1} = r_{k+1} - \beta_{k}d_{k}$
+  \item Incremente $k = k + 1$
+  \end{itemize}
+\item A solução é dada por $x_{k}$!
+\end{itemize}
+
 \subsection{Implementação}
 \subsubsection{Método de gradientes conjugados}
 ...
