@@ -1,0 +1,67 @@
+<!DOCTYPE html PUBLIC "-//W3O//DTD W3 HTML 2.0//EN">
+<!--- Converted with LaTeX2HTML 0.6.4 (Tues Aug 30 1994) by Nikos Drakos (nikos@cbl.leeds.ac.uk), CBLU, University of Leeds --->
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=windows-1252"></head><body><p>
+
+<title> Compressed Row Storage (CRS)</title>
+<meta name="description" value=" Compressed Row Storage (CRS)">
+<meta name="keywords" value="report">
+<meta name="resource-type" value="document">
+<meta name="distribution" value="global">
+
+</p><p>
+ <br> </p><hr><a name="tex2html1717" href="http://netlib.org/linalg/html_templates/node92.html"><img alt="next" src="Compressed%20Row%20Storage%20%28CRS%29_arquivos/next_motif.gif" align="BOTTOM"></a> <a name="tex2html1715" href="http://netlib.org/linalg/html_templates/node90.html"><img alt="up" src="Compressed%20Row%20Storage%20%28CRS%29_arquivos/up_motif.gif" align="BOTTOM"></a> <a name="tex2html1709" href="http://netlib.org/linalg/html_templates/node90.html"><img alt="previous" src="Compressed%20Row%20Storage%20%28CRS%29_arquivos/previous_motif.gif" align="BOTTOM"></a> <a name="tex2html1719" href="http://netlib.org/linalg/html_templates/node4.html"><img alt="contents" src="Compressed%20Row%20Storage%20%28CRS%29_arquivos/contents_motif.gif" align="BOTTOM"></a> <a name="tex2html1720" href="http://netlib.org/linalg/html_templates/node136.html"><img alt="index" src="Compressed%20Row%20Storage%20%28CRS%29_arquivos/index_motif.gif" align="BOTTOM"></a> <br>
+<b> Next:</b> <a name="tex2html1718" href="http://netlib.org/linalg/html_templates/node92.html"> Compressed Column Storage </a>
+<b>Up:</b> <a name="tex2html1716" href="http://netlib.org/linalg/html_templates/node90.html"> Survey of Sparse </a>
+<b> Previous:</b> <a name="tex2html1710" href="http://netlib.org/linalg/html_templates/node90.html"> Survey of Sparse </a>
+<br> <hr> <p>
+</p><h3><a name="SECTION00931100000000000000"> Compressed Row Storage (CRS)</a></h3>
+<p>
+<a name="secdatastructurescrs">&nbsp;</a>
+<a name="2651">&nbsp;</a>
+</p><p>
+The Compressed Row and Column (in the next section) Storage formats
+are the most general: they make absolutely no assumptions about the
+sparsity structure of the matrix, and they don't store any unnecessary
+elements. On the other hand, they are not very efficient, needing an
+indirect addressing step for every single scalar operation in a matrix-vector
+product or preconditioner solve.
+</p><p>
+The Compressed Row Storage (CRS) format puts the subsequent nonzeros of the
+matrix rows in contiguous memory locations.
+Assuming we have a nonsymmetric sparse matrix <img src="Compressed%20Row%20Storage%20%28CRS%29_arquivos/_22900_tex2html_wrap8327.gif" align="BOTTOM">, we create <img src="Compressed%20Row%20Storage%20%28CRS%29_arquivos/_22900_tex2html_wrap7687.gif" align="BOTTOM"> vectors:
+one for floating-point numbers (<tt>val</tt>), and the other two for
+integers (<tt>col_ind</tt>, <tt>row_ptr</tt>).  The <tt>val</tt> vector
+stores the values of the nonzero elements of the
+matrix <img src="Compressed%20Row%20Storage%20%28CRS%29_arquivos/_22900_tex2html_wrap8327.gif" align="BOTTOM">, as they are traversed in a row-wise fashion.
+The <tt>col_ind</tt> vector stores
+the column indexes of the elements in the <tt>val</tt> vector. 
+That is, if <img src="Compressed%20Row%20Storage%20%28CRS%29_arquivos/_22900_tex2html_wrap7155.gif" align="BOTTOM"> then <img src="Compressed%20Row%20Storage%20%28CRS%29_arquivos/_22900_tex2html_wrap7153.gif" align="BOTTOM">.
+The <tt>row_ptr</tt> vector stores
+the locations in the <tt>val</tt> vector that start a row, that is,
+if <img src="Compressed%20Row%20Storage%20%28CRS%29_arquivos/_22900_tex2html_wrap7155.gif" align="BOTTOM"> then <img src="Compressed%20Row%20Storage%20%28CRS%29_arquivos/_22900_tex2html_wrap7157.gif" align="BOTTOM">.
+By convention, we define <img src="Compressed%20Row%20Storage%20%28CRS%29_arquivos/_22900_tex2html_wrap7159.gif" align="BOTTOM">, where <img src="Compressed%20Row%20Storage%20%28CRS%29_arquivos/_22900_tex2html_wrap7161.gif" align="BOTTOM"> is
+the number of nonzeros in the matrix <img src="Compressed%20Row%20Storage%20%28CRS%29_arquivos/_22900_tex2html_wrap8327.gif" align="BOTTOM">.  The storage savings for this
+approach is significant.  Instead of storing <img src="Compressed%20Row%20Storage%20%28CRS%29_arquivos/_22900_tex2html_wrap7165.gif" align="BOTTOM"> elements,
+we need only <img src="Compressed%20Row%20Storage%20%28CRS%29_arquivos/_22900_tex2html_wrap7167.gif" align="BOTTOM"> storage locations.
+</p><p>
+As an example, consider the nonsymmetric matrix <img src="Compressed%20Row%20Storage%20%28CRS%29_arquivos/_22900_tex2html_wrap8327.gif" align="BOTTOM"> defined by
+</p><p><a name="sparseA">&nbsp;</a><img src="Compressed%20Row%20Storage%20%28CRS%29_arquivos/_22900_equation2668.gif" align="BOTTOM"></p><p>
+</p><p>
+The CRS format for this matrix is then specified by the arrays
+{<tt>val</tt>, <tt>col_ind</tt>, <tt>row_ptr</tt>} given below
+</p><p><img src="Compressed%20Row%20Storage%20%28CRS%29_arquivos/_22900_tabular2678.gif" align="BOTTOM"></p><p> <br>
+</p><p><img src="Compressed%20Row%20Storage%20%28CRS%29_arquivos/_22900_tabular2684.gif" align="BOTTOM"></p><p>  .
+</p><p>
+If the matrix <img src="Compressed%20Row%20Storage%20%28CRS%29_arquivos/_22900_tex2html_wrap8327.gif" align="BOTTOM"> is symmetric, we need only store the upper (or
+lower) triangular portion of the matrix. The trade-off is 
+a more complicated algorithm with a somewhat different pattern of data access.
+<a name="2690">&nbsp;</a>
+</p><p>
+<br> </p><hr>
+<p></p><address>
+<i> Jack Dongarra <br>
+Mon Nov 20 08:52:54 EST 1995</i>
+</address>
+
+</body></html>
