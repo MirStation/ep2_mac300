@@ -1,11 +1,11 @@
 # Makefile
 FLAGS = -g -Wall -ansi -pedantic -lm -O3
 TARGETS = cgm 
-OBJECTS = cgm.o
+OBJECTS = cgm.o sss.o
 
 all : ${TARGETS}
 
-cgm : cgm.o
+cgm : cgm.o sss.o
 	gcc -o $@ $? ${FLAGS}
 
 %.o : %.c

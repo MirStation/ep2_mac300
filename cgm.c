@@ -3,6 +3,9 @@
 #include <assert.h>
 #include <math.h>
 
+#include "sss.h"
+
+/* Do not use it */
 double * vvsum(int n, double *v0, double *v1) {
   int i;
   for (i = 0; i < n; i++) {
@@ -11,6 +14,7 @@ double * vvsum(int n, double *v0, double *v1) {
   return v0;
 }
 
+/* Do not use it */
 double * vvsub(int n, double *v0, double *v1) {
   int i;
   for (i = 0; i < n; i++) {
@@ -19,6 +23,7 @@ double * vvsub(int n, double *v0, double *v1) {
   return v0;
 }
 
+/* Do not use it */
 double * vemul(int n, double *v, double e) {
   int i;
   for (i = 0; i < n; i++) {
@@ -27,6 +32,7 @@ double * vemul(int n, double *v, double e) {
   return v;
 }
 
+/* Do not use it */
 double vvmul(int n, double *v0, double *v1) {
   int i;
   double r = 0;
@@ -36,6 +42,7 @@ double vvmul(int n, double *v0, double *v1) {
   return r;
 }
 
+/* Do not use it */
 double * Mv(int n, double **M, double *v) {
   int i;
   double *vr = (double *) calloc(n, sizeof(double));
@@ -46,6 +53,7 @@ double * Mv(int n, double **M, double *v) {
   return vr;
 }
 
+/* Do not use it */
 void cg(int imax, int n, double **A, double *b, double e){
   double *r, *x, *p, af, bt, *s0, s1;
   int i;
@@ -86,5 +94,7 @@ void cg(int imax, int n, double **A, double *b, double e){
 
 int main(int argc, char **argv) {
   printf("Conjugate Gradient Method!\n");
+
+  random_spdm(30, 0.01);
   return 0;
 }
