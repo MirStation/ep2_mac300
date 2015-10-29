@@ -95,6 +95,8 @@ void cg(int imax, int n, double **A, double *b, double e){
 int main(int argc, char **argv) {
   printf("Conjugate Gradient Method!\n");
 
-  random_spdm(30, 0.01);
+  /* Testing */
+  random_spdm(100, 0.01);
+
   return 0;
 }

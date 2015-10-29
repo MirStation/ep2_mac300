@@ -16,7 +16,7 @@ double rand_within_range(double a, double b) {
 
 void random_spdm(int n, double r) {
   double **spdm, tmp;
-  int i, j;
+  int i, j, k;
 
   spdm = (double **) malloc(n*sizeof(double*));
   assert(spdm);
@@ -35,12 +35,13 @@ void random_spdm(int n, double r) {
    * Replacing each off-diagonal entry with a_ij if |a_ij| < r.
    */
   init_rand();
+  k = 0;
   for (i = 1; i < n; i++) {
     for (j = 0; j < i; j++) {
       tmp = rand_within_range(-1, 1);
-      printf("tmp: %.2f\n", tmp);
       if (!(fabs(tmp) > r)) {
-	printf(":]\n");
+	k++;
+	printf("tmp: %f\n", tmp);
 	spdm[i][j] = tmp;
 	spdm[j][i] = spdm[i][j];
       }
@@ -51,11 +52,13 @@ void random_spdm(int n, double r) {
   printf("SPDM:\n");
   for (i = 0; i < n; i++) {
     for (j = 0; j < n; j++) {
-      printf(" %.2f", spdm[i][j]);
+      printf(" %f", spdm[i][j]);
     }
     putchar('\n');
   }
 
+  printf("nnz: %d\n", (k*2) + n);
+  
   /* Releasing memory. */
   for(i = 0; i < n; i++) {
     free(spdm[i]);
