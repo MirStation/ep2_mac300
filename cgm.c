@@ -202,6 +202,7 @@ void cg(SSS A, double *b, double e, double *x) {
 
     delta_old = delta;
     vvmul(A->n, b, b, &delta);
+    printf("|| r%d || = %f\n", i + 1, sqrt(delta));
     /*printf("delta: %f\n",delta);
       printf("delta_old: %f\n",delta_old);*/
     beta = delta / delta_old;
@@ -270,7 +271,7 @@ int main(int argc, char **argv) {
   x = (double *) calloc(n, sizeof(double));
   assert(x);
   
-  cg(sss, b, 0.0001, x);
+  cg(sss, b, 0.000001, x);
 
   puts("x^T:");
   for (i = 0; i < n; i++) {
