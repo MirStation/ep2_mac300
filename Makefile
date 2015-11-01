@@ -1,11 +1,14 @@
 # Makefile
-FLAGS = -g -Wall -ansi -pedantic -lm -O3
-TARGETS = cgm 
-OBJECTS = cgm.o sss.o
+FLAGS = -g -Wall -std=gnu99 -pedantic -lm -O3
+TARGETS = cgm sspdsgen
+OBJECTS = cgm.o sspdsgen.o
 
 all : ${TARGETS}
 
-cgm : cgm.o sss.o
+cgm : cgm.o
+	gcc -o $@ $? ${FLAGS}
+
+sspdsgen : sspdsgen.o
 	gcc -o $@ $? ${FLAGS}
 
 %.o : %.c

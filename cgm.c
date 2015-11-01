@@ -3,8 +3,6 @@
 #include <assert.h>
 #include <math.h>
 
-#include "sss.h"
-
 /* Do not use it */
 double * vvsum(int n, double *v0, double *v1) {
   int i;
@@ -91,12 +89,30 @@ void cg(int imax, int n, double **A, double *b, double e){
   free(p);
 }
 
+struct SparceSymmetricSkyline {
+  double *dvalues;
+  int *rowptr;
+  int *colind;
+  double *values;
+  int n;
+  int nnz;
+};
+typedef struct SparceSymmetricSkyline * SSS;
+
+void sss_spm_v(SSS A, double *x, double **y) {
+  int r, c, j;
+  for (r = 0; r < A->n; r++) {
+    (*y)[r] = A->dvalues[r] * x[r];
+    for (j = A->rowptr[r]; j < A->rowptr[r + 1]; r++) {
+      c = A->colind[j];
+      (*y)[r] = (*y)[r] + A->values[j] * x[c];
+      (*y)[c] = (*y)[c] + A->values[j] * x[r];
+    }
+  }
+}
 
 int main(int argc, char **argv) {
   printf("Conjugate Gradient Method!\n");
-
-  /* Testing */
-  random_spdm(100, 0.01);
-
   return 0;
 }
+
