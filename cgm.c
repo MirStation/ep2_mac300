@@ -31,40 +31,43 @@ SSS new_sss(double **A, int n, int nz) {
 
   new = (SSS) malloc(sizeof(struct SparceSymmetricSkyline));
   assert(new);
-  new->dvalues = (double *) malloc(n*sizeof(double));
+  new->dvalues = (double *) malloc(n * sizeof(double));
   assert(new->dvalues);
-  new->rowptr = (int *) malloc((n+1)*sizeof(int));
+  new->rowptr = (int *) malloc((n + 1) * sizeof(int));
   assert(new->rowptr);
-  new->colind = (int *) malloc(((nz - n) / 2)*sizeof(int));
+  for (i = 0; i < (n + 1); i++) {
+    new->rowptr[i] = -1;
+  }
+  new->colind = (int *) malloc(((nz - n) / 2) * sizeof(int));
   assert(new->colind);
-  new->values = (double *) malloc(((nz - n) / 2)*sizeof(double));
+  new->values = (double *) malloc(((nz - n) / 2) * sizeof(double));
   assert(new->values);
   new->n = n;
   new->nz = nz;
-
+  
   k = 0;
-  l = 0;
   for (i = 0; i < n; i++) {
     first_row_nz_value = 1;
     for (j = 0; j < i; j++) {
       if (A[i][j] != 0) {
+	new->colind[k] = j;
+	new->values[k] = A[i][j];
 	if (first_row_nz_value == 1) {
 	  first_row_nz_value = 0;
-	  new->rowptr[k++] = j;
+	  new->rowptr[i] = k;
+	  l = i - 1;
+	  while((new->rowptr[l] == -1) && (l >= 0)) {
+	    new->rowptr[l--] = new->rowptr[i];
+	  }
 	}
-	new->colind[l] = j;
-	new->values[l] = A[i][j];
-	l++;
+	k++;
       }
     }
     new->dvalues[i] = A[i][j];
-    if (first_row_nz_value == 1) {
-      new->rowptr[k++] = j;
-    }
   }
-  new->rowptr[k] = (nz - n) / 2;
+  new->rowptr[i] = (nz - n) / 2;
 
-  /* [DEBUG] Printing SSS. 
+  /* [DEBUG] Printing SSS. */
   puts("dvalues:");
   for (i = 0; i < n; i++) {
     printf(" %f", new->dvalues[i]);
@@ -87,7 +90,7 @@ SSS new_sss(double **A, int n, int nz) {
   putchar('\n');
   printf("n:\n %d\n", new->n);
   printf("nz:\n %d\n", new->nz);
-  */
+  
   
   return new;
 }
