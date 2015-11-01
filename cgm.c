@@ -133,7 +133,7 @@ void vvsub(int n, double *v1, double *v2, double *res) {
 }
 
 void cg(SSS A, double *b, double e, double *x) {
-  double *p, *Ap, alfa, beta, aux1, aux2, *aux3;
+  double *p, *Ap, alfa, beta, delta_0, delta, delta_old, aux, *aux_v;
   int i, j;
   
   Ap = (double *) calloc(A->n, sizeof(double));
@@ -145,60 +145,65 @@ void cg(SSS A, double *b, double e, double *x) {
     p[i] = b[i];
   }
 
-  aux3 = (double *) calloc(A->n, sizeof(double));
-  assert(aux3);
+  aux_v = (double *) calloc(A->n, sizeof(double));
+  assert(aux_v);
 
-  for (i = 0; i < A->n; i++) {
+  vvmul(A->n, b, b, &delta);
+  delta_0 = delta;
+
+  i = 0;
+  while ((i < A->n) && (delta > (pow(e,2) * delta_0))) {
     sss_spm_v(A, p, Ap);
-    puts("Ap:");
+    /*puts("Ap:");
     for (j = 0; j < A->n; j++) {
       printf(" %f\n", Ap[j]);
-    }
-    vvmul(A->n, b, b, &aux1);
-    printf("aux1: %f\n",aux1);
-    vvmul(A->n, p, Ap, &aux2);
-    printf("aux2: %f\n",aux2);
-    alfa =  aux1 / aux2;
-    printf("alfa: %f\n",alfa);
+      }
+    */
+    vvmul(A->n, p, Ap, &aux);
+    /*printf("aux: %f\n",aux);*/
+    alfa =  delta / aux;
+    /*printf("alfa: %f\n",alfa);*/
 
-    cvmul(A->n, alfa, p, aux3);
-    puts("x-aux3:");
+    cvmul(A->n, alfa, p, aux_v);
+    /*puts("x-aux_v:");
     for (j = 0; j < A->n; j++) {
-      printf(" %f\n", aux3[j]);
-    }
-    vvsum(A->n, x, aux3, x);
-    puts("x:");
+      printf(" %f\n", aux_v[j]);
+      }*/
+    vvsum(A->n, x, aux_v, x);
+    /*puts("x:");
     for (j = 0; j < A->n; j++) {
       printf(" %f\n", x[j]);
-    }
+      }*/
     
-    cvmul(A->n, alfa, Ap, aux3);
-    puts("b-aux3:");
+    cvmul(A->n, alfa, Ap, aux_v);
+    /*puts("b-aux_v:");
     for (j = 0; j < A->n; j++) {
-      printf(" %f\n", aux3[j]);
-    }
-    vvsub(A->n, b, aux3, b);
-    puts("b:");
+      printf(" %f\n", aux_v[j]);
+      }*/
+    vvsub(A->n, b, aux_v, b);
+    /*puts("b:");
     for (j = 0; j < A->n; j++) {
       printf(" %f\n", b[j]);
-    }
-    
-    vvmul(A->n, b, b, &aux2);
-    printf("aux2: %f\n",aux2);
-    printf("aux1: %f\n",aux1);
-    beta = aux2 / aux1;
-    printf("beta: %f\n",beta);
+      }*/
 
-    cvmul(A->n, beta, p, aux3);
-    puts("p-aux3:");
+    delta_old = delta;
+    vvmul(A->n, b, b, &delta);
+    /*printf("delta: %f\n",delta);
+      printf("delta_old: %f\n",delta_old);*/
+    beta = delta / delta_old;
+    /*printf("beta: %f\n",beta);*/
+    
+    cvmul(A->n, beta, p, aux_v);
+    /*puts("p-aux_v:");
     for (j = 0; j < A->n; j++) {
-      printf(" %f\n", aux3[j]);
-    }
-    vvsum(A->n, b, aux3, p);
-    puts("p:");
+      printf(" %f\n", aux_v[j]);
+      }*/
+    vvsum(A->n, b, aux_v, p);
+    /*puts("p:");
     for (j = 0; j < A->n; j++) {
       printf(" %f\n", p[j]);
-    }
+      }*/
+    i++;
   }
 
   /*
@@ -215,7 +220,7 @@ void cg(SSS A, double *b, double e, double *x) {
   
   free(Ap);
   free(p);
-  free(aux3);
+  free(aux_v);
 }
 
 int main(int argc, char **argv) {
@@ -249,7 +254,7 @@ int main(int argc, char **argv) {
   x = (double *) calloc(n, sizeof(double));
   assert(x);
   
-  cg(sss, b, 0.001, x);
+  cg(sss, b, 0.0001, x);
 
   puts("x^T:");
   for (i = 0; i < n; i++) {
