@@ -2,6 +2,18 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <math.h>
+#include <time.h>
+
+#define SECOND_TO_NANOSECOND 1000000000
+
+struct timespec start_t;
+struct timespec end_t;
+
+double diff_t_s(struct timespec start_t, struct timespec end_t){
+  double start_t_s = ((double)start_t.tv_sec) + ((double)start_t.tv_nsec/SECOND_TO_NANOSECOND);
+  double end_t_s = ((double)end_t.tv_sec) + ((double)end_t.tv_nsec/SECOND_TO_NANOSECOND);
+  return end_t_s - start_t_s;
+}
 
 struct SparceSymmetricSkyline {
   double *dvalues;
@@ -134,7 +146,7 @@ void vvsub(int n, double *v1, double *v2, double *res) {
 
 void cg(SSS A, double *b, double e, double *x) {
   double *p, *Ap, alfa, beta, delta_0, delta, delta_old, aux, *aux_v;
-  int i, j;
+  int i /*, j*/;
   
   Ap = (double *) calloc(A->n, sizeof(double));
   assert(Ap);
@@ -152,6 +164,8 @@ void cg(SSS A, double *b, double e, double *x) {
   delta_0 = delta;
 
   i = 0;
+
+  clock_gettime(CLOCK_REALTIME, &start_t);
   while ((i < A->n) && (delta > (pow(e,2) * delta_0))) {
     sss_spm_v(A, p, Ap);
     /*puts("Ap:");
@@ -205,6 +219,8 @@ void cg(SSS A, double *b, double e, double *x) {
       }*/
     i++;
   }
+  clock_gettime(CLOCK_REALTIME, &end_t);
+  printf("cgm_time: %f\n", diff_t_s(start_t,end_t));
 
   /*
   if (i < A->n) {
